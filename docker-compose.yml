@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16.3
+    environment:
+      POSTGRES_DB: "congratulator"
+      POSTGRES_USER: "pgUser"
+      POSTGRES_PASSWORD: "very_d!ff!cu1t_p@ssw0rd"
+    ports:
+      - "5432:5432"
