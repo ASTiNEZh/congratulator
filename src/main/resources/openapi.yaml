@@ -1,0 +1,207 @@
+openapi: 3.0.3
+info:
+  title: congratulator
+  version: 0.0.1
+servers:
+  - url: http://localhost
+    description: адрес сервера
+paths:
+  /birthdays/new:
+    post:
+      operationId: rememberBirthday
+      tags:
+        - Birthday
+      description: '"Запомнить" новое ДР'
+      requestBody:
+        description: Запись о ДР
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BirthdayDto'
+        required: true
+      responses:
+        '200':
+          description: Успешный ответ
+        'default':
+          description: Условия успешного ответа не удовлетворяются
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+  /birthdays:
+    get:
+      operationId: getBirthdaysList
+      tags:
+        - Birthdays
+      description: Возвращает все ДР
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BirthdaysDtoList"
+  /birthdays/{uuid}:
+    get:
+      operationId: getBirthday
+      tags:
+        - Birthday
+      description: Возвращает конкретный ДР
+      parameters:
+        - $ref: '#/components/parameters/uuid'
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirthdayDto'
+        'default':
+          description: Условия успешного ответа не удовлетворяются
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    put:
+      operationId: updateBirthday
+      tags:
+        - Birthday
+      description: Обновление ДР
+      parameters:
+        - $ref: '#/components/parameters/uuid'
+      requestBody:
+        description: Обновлённое событие
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BirthdayDto'
+        required: true
+      responses:
+        '200':
+          description: Успешный ответ
+        'default':
+          description: Условия успешного ответа не удовлетворяются
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+    delete:
+      operationId: deleteBirthday
+      tags:
+        - Birthday
+      description: Удаление ДР
+      parameters:
+        - $ref: '#/components/parameters/uuid'
+      responses:
+        '200':
+          description: Успешный ответ
+        'default':
+          description: Условия успешного ответа не удовлетворяются
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+components:
+  parameters:
+    uuid:
+      required: true
+      name: uuid
+      in: path
+      schema:
+        type: string
+        format: uuid
+    page:
+      in: query
+      name: page
+      description: Начальное значение
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    size:
+      in: query
+      name: size
+      description: Количество результатов, возвращаемых на страницу
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
+    sort:
+      in: query
+      name: sort
+      description: Направление сортировки (asc или desc)
+      required: false
+      schema:
+        type: string
+        enum: [ 'asc', 'desc' ]
+  schemas:
+    BirthdaysDtoList:
+      title: Cписок ДР
+      type: array
+      items:
+        $ref: '#/components/schemas/BirthdayDto'
+    BirthdayDto:
+      title: Запись о ДР
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID события
+          example: 00000000-0000-0000-0000-000000000001
+        сelebrant:
+          $ref: '#/components/schemas/CelebrantDto'
+        birthDay:
+          type: string
+          format: date
+          description: 'Дата рождения хранится именно в записи о ДР т.к. в иерархии сущностей ДР является доменирующей
+           для выполнения поставленной задачи - уведомление о дне рождения. В таком случае сам по себе именниник
+           носит вторичный харррактер. Следовательно, не смотря на то что дата рождения - это даннные которые
+           пренадлежат имениннику, как доминирующая сущность, событие "День рождения" претендующее на
+           обладание данными, забирает их себе. Возможно это спорное решение, но пока будет так'
+          example:
+        status:
+          type: string
+          description: Статус ДР
+          enum:
+            - OTHER
+            - RECENT
+            - TODAY
+            - UPCOMING
+      required:
+        - uuid
+        - status
+    CelebrantDto:
+      title: Именинник
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID именниника
+          example: 10000000-0000-0000-0000-000000000000
+        firstName:
+          type: string
+          description: Имя
+          example: Женя
+        lastName:
+          type: string
+          description: Отчество
+          example: Евгеньевич/Евгеньевна
+        surname:
+          type: string
+          description: Фамилия
+          example: Иванов/Иванова
+    ErrorDto:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string

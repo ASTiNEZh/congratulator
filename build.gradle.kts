@@ -1,0 +1,109 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
+plugins {
+    java
+    idea
+    kotlin("jvm")
+    kotlin("plugin.spring")
+    id("maven-publish")
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
+    id("org.openapi.generator")
+}
+
+val versionKotlin: String by project
+val versionSpringBoot: String by project
+val versionDependencyManagement: String by project
+val versionPostgresql: String by project
+val versionJava: String by project
+val versionProject: String by project
+val projectGroup: String? by project
+
+val versionOpenApiGenerator: String by project
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:$versionSpringBoot")
+    }
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+
+    implementation(kotlin("stdlib-jdk8"))
+
+    // Jackson
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+
+    // Bean Validation API support
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+
+    // SpringDoc dependencies
+//    implementation("org.springdoc:springdoc-openapi-ui:1.6.15")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+
+
+    //Swagger annotations
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.8")
+
+    // PostgreSQL
+    implementation("org.postgresql:postgresql:${versionPostgresql}")
+}
+
+tasks.bootJar {
+    enabled = true
+}
+
+tasks.jar {
+    enabled = false
+}
+
+openApiGenerate {
+    generatorName.set("spring")
+    inputSpec.set("$rootDir/src/main/resources/openapi.yaml")
+    outputDir.set("$buildDir/openapi")
+    apiPackage.set("$projectGroup.controller")
+    modelPackage.set("$projectGroup.dto")
+    configOptions.set(
+        mapOf(
+            "dateLibrary" to "java8",
+            "interfaceOnly" to "true",
+            "useJakartaEe" to "true"
+        )
+    )
+}
+
+sourceSets.main {
+    java.srcDir("$buildDir/openapi/src/main/java")
+}
+
+//sourceSets {
+//    val main by getting {
+//        java {
+//            srcDir("$buildDir/openapi/src/main/java")
+//        }
+//    }
+//}
+
+tasks.named("compileKotlin") {
+    dependsOn("openApiGenerate")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
