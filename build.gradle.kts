@@ -1,5 +1,3 @@
-import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
-
 plugins {
     java
     idea
@@ -42,6 +40,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
     implementation(kotlin("stdlib-jdk8"))
 
@@ -54,15 +53,21 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
     // SpringDoc dependencies
-//    implementation("org.springdoc:springdoc-openapi-ui:1.6.15")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
-
-    //Swagger annotations
+    // Swagger annotations
     implementation("io.swagger.core.v3:swagger-annotations:2.2.8")
 
     // PostgreSQL
     implementation("org.postgresql:postgresql:${versionPostgresql}")
+
+    // Spring Data JPA
+    implementation("org.springframework.data:spring-data-jpa")
+
+    // Lombok
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
+
 }
 
 tasks.bootJar {
@@ -91,14 +96,6 @@ openApiGenerate {
 sourceSets.main {
     java.srcDir("$buildDir/openapi/src/main/java")
 }
-
-//sourceSets {
-//    val main by getting {
-//        java {
-//            srcDir("$buildDir/openapi/src/main/java")
-//        }
-//    }
-//}
 
 tasks.named("compileKotlin") {
     dependsOn("openApiGenerate")
