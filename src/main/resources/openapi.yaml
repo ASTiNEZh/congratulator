@@ -3,7 +3,7 @@ info:
   title: congratulator
   version: 0.0.1
 servers:
-  - url: http://localhost
+  - url: http://localhost:8081
     description: адрес сервера
 paths:
   /birthdays/new:
@@ -157,7 +157,7 @@ components:
           example: 00000000-0000-0000-0000-000000000001
         сelebrant:
           $ref: '#/components/schemas/CelebrantDto'
-        birthDay:
+        birthDate:
           type: string
           format: date
           description: 'Дата рождения хранится именно в записи о ДР т.к. в иерархии сущностей ДР является доменирующей
@@ -165,7 +165,7 @@ components:
            носит вторичный харррактер. Следовательно, не смотря на то что дата рождения - это даннные которые
            пренадлежат имениннику, как доминирующая сущность, событие "День рождения" претендующее на
            обладание данными, забирает их себе. Возможно это спорное решение, но пока будет так'
-          example:
+          example: 2000-01-01
         status:
           type: string
           description: Статус ДР
@@ -189,15 +189,15 @@ components:
         firstName:
           type: string
           description: Имя
-          example: Женя
+          example: Иван
         lastName:
           type: string
           description: Отчество
-          example: Евгеньевич/Евгеньевна
+          example: Иванович
         surname:
           type: string
           description: Фамилия
-          example: Иванов/Иванова
+          example: Иванов
     ErrorDto:
       type: object
       properties:

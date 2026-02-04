@@ -68,6 +68,9 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.32")
     annotationProcessor("org.projectlombok:lombok:1.18.32")
 
+    // ModelMapper
+    implementation("org.modelmapper:modelmapper:3.2.6")
+
 }
 
 tasks.bootJar {
