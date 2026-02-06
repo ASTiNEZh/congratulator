@@ -28,11 +28,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+  /:
+    get:
+      operationId: getActualBirthdaysList
+      tags:
+        - Birthday
+      description: Возвращает ДР наступающие менее чем через 30 дней
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            mapplication/json:
+              schema:
+                $ref: '#/components/schemas/BirthdaysDtoList'
   /birthdays:
     get:
       operationId: getBirthdaysList
       tags:
-        - Birthdays
+        - Birthday
       description: Возвращает все ДР
       parameters:
         - $ref: '#/components/parameters/page'
@@ -44,7 +57,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BirthdaysDtoList"
+                $ref: '#/components/schemas/BirthdaysDtoList'
   /birthdays/{uuid}:
     get:
       operationId: getBirthday
@@ -105,6 +118,49 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+  /files/upload:
+    post:
+      tags:
+        - Photo
+      summary: Загрузка одного или нескольких файлов
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                uuid:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Файлы успешно загружены
+  /files/{id}:
+    get:
+      tags:
+        - Photo
+      summary: Скачивание файла по ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Файл изображения или любого типа
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
 components:
   parameters:
     uuid:

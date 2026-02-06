@@ -24,4 +24,7 @@ public class Celebrant {
 
     @Column(name = "surname")
     private String surname;
+
+    @Column(name = "photo_storage_path")
+    private String photoStoragePath;
 }
