@@ -3,7 +3,6 @@ package ru.astinezh.congratulator.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.Type;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
@@ -19,7 +18,7 @@ public class Birthday {
 
     @OneToOne
     @JoinColumn(name = "celebrant_uuid")
-    private Celebrant сelebrant;
+    private Celebrant celebrant;
 
     @Column(name = "birth_date")
     private LocalDate birthDate;

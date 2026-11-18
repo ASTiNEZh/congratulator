@@ -38,7 +38,7 @@ public class BirthdayController implements BirthdaysApi, DefaultApi {
 
     @Override
     public ResponseEntity<Void> rememberBirthday(BirthdayDto birthday) {
-        celebrantService.remember(modelMapper.map(birthday.getСElebrant(), Celebrant.class));
+        celebrantService.remember(modelMapper.map(birthday.getCelebrant(), Celebrant.class));
         birthdayService.remember(modelMapper.map(birthday, Birthday.class));
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -68,7 +68,7 @@ public class BirthdayController implements BirthdaysApi, DefaultApi {
 
     @Override
     public ResponseEntity<Void> updateBirthday(UUID uuid, BirthdayDto birthdayDto) {
-        Celebrant celebrant = modelMapper.map(birthdayDto.getСElebrant(), Celebrant.class);
+        Celebrant celebrant = modelMapper.map(birthdayDto.getCelebrant(), Celebrant.class);
         celebrantService.update(celebrant.getUuid(), celebrant);
         birthdayService.update(uuid, modelMapper.map(birthdayDto, Birthday.class));
         return new ResponseEntity<>(HttpStatus.OK);

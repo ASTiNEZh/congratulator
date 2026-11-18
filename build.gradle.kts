@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     idea
     kotlin("jvm")
     kotlin("plugin.spring")
@@ -18,6 +19,9 @@ val versionProject: String by project
 val projectGroup: String? by project
 
 val versionOpenApiGenerator: String by project
+
+// Testcontainers 1.21.4+ нужен для Docker Engine 29+ (в 1.19.x из BOM Spring Boot 3.2 подключение к Docker падает)
+extra["testcontainers.version"] = "1.21.4"
 
 java {
     toolchain {
@@ -39,6 +43,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // Testcontainers: настоящая PostgreSQL в Docker для интеграционных тестов
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
@@ -106,4 +115,24 @@ tasks.named("compileKotlin") {
 
 tasks.test {
     useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports { html.required.set(true) }
+}
+
+// Быстрый прогон без Docker: ./gradlew unitTest
+tasks.register<Test>("unitTest") {
+    group = "verification"
+    description = "Тесты без Docker (исключает тесты с тегом docker)"
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    useJUnitPlatform {
+        excludeTags("docker")
+    }
 }

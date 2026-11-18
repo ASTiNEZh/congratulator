@@ -211,7 +211,7 @@ components:
           format: uuid
           description: UUID события
           example: 00000000-0000-0000-0000-000000000001
-        сelebrant:
+        celebrant:
           $ref: '#/components/schemas/CelebrantDto'
         birthDate:
           type: string
